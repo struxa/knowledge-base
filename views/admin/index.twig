@@ -1,4 +1,4 @@
-{% extends 'admin/base.twig' %}
+{% extends '@plugin_knowledge_base_plugin/admin/_layout.twig' %}
 
 {% block admin_title %}Knowledge Base{% endblock %}
 
@@ -8,30 +8,29 @@
 
 {% block admin_hero_sub %}
   <p class="admin-hero-sub">
-    Struxa CMS documentation for your team.
+    Struxa CMS documentation for your team. Pick an article from the sidebar, or browse by section below.
     {% if public_visible %}
       Published on the storefront at <code>/{{ content_type_slug }}/…</code>.
     {% else %}
-      Admin-only until you enable the storefront in <a href="{{ url_for('plugin.knowledge_base_plugin.settings') }}">Settings</a>.
+      Admin-only until you enable the storefront in Settings.
     {% endif %}
   </p>
 {% endblock %}
 
 {% block admin_hero_actions %}
-  <a class="admin-btn admin-btn--secondary" href="{{ url_for('plugin.knowledge_base_plugin.settings') }}">Settings</a>
   {% if public_visible %}
     <a class="admin-btn admin-btn--primary" href="/{{ content_type_slug }}" target="_blank" rel="noopener">View public index</a>
   {% endif %}
 {% endblock %}
 
-{% block admin_content %}
-  <section class="admin-section">
-    <div class="admin-cards">
+{% block kb_wiki_main %}
+  <section class="admin-section" style="padding-top: 0;">
+    <div class="admin-cards" style="margin-bottom: 1.25rem;">
       <article class="admin-card admin-card--featured">
         <div class="admin-card-body">
           <p class="admin-card-kicker">Articles</p>
           <p class="admin-card-stat">{{ article_count }}</p>
-          <p class="admin-card-desc">Grouped by audience. Edit any article under Content → Knowledge Base or use the links below.</p>
+          <p class="admin-card-desc">Grouped by audience in the sidebar. Content is stored as the <code>kb</code> content type.</p>
         </div>
       </article>
       <article class="admin-card">
@@ -40,55 +39,36 @@
           <p class="admin-card-stat">{{ public_visible ? 'Public' : 'Admin only' }}</p>
           <p class="admin-card-desc">
             {% if public_visible %}
-              Content type <code>{{ content_type_slug }}</code> has public routes enabled.
+              Public routes enabled for <code>{{ content_type_slug }}</code>.
             {% else %}
-              Tick <strong>Visible on storefront</strong> in Settings to expose <code>/{{ content_type_slug }}</code>.
+              Enable <strong>Visible on storefront</strong> in Settings to expose public URLs.
             {% endif %}
           </p>
         </div>
       </article>
     </div>
-  </section>
 
-  {% if sections is empty %}
-    <div class="admin-callout">
-      <p class="admin-prose">No articles yet. Activate the plugin (migrations) and reload this page to seed the default wiki.</p>
-    </div>
-  {% else %}
-    {% for section in sections %}
-      <section class="admin-section">
-        <h2 class="admin-section-title">{{ section.section_label }}</h2>
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th scope="col">Article</th>
-                <th scope="col">Summary</th>
-                <th scope="col" class="admin-table-col--actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for article in section.articles %}
-                <tr>
-                  <td>
-                    <strong>{{ article.title|e }}</strong>
-                    <div class="admin-text-muted"><code>{{ article.slug|e }}</code></div>
-                  </td>
-                  <td>{{ article.summary|default('—')|e }}</td>
-                  <td class="admin-table-col--actions">
-                    {% if article.edit_url %}
-                      <a class="admin-btn admin-btn--sm admin-btn--secondary" href="{{ article.edit_url }}">Edit</a>
-                    {% endif %}
-                    {% if article.public_url %}
-                      <a class="admin-btn admin-btn--sm admin-btn--ghost" href="{{ article.public_url }}" target="_blank" rel="noopener">View</a>
-                    {% endif %}
-                  </td>
-                </tr>
+    {% if sections is empty %}
+      <div class="admin-callout">
+        <p class="admin-prose">No articles yet. Activate the plugin (migrations) and reload this page to seed the default wiki.</p>
+      </div>
+    {% else %}
+      <div class="kb-wiki-section-cards">
+        {% for section in sections %}
+          <article class="kb-wiki-section-card">
+            <h3>{{ section.section_label|e }}</h3>
+            <p>{{ section.articles|length }} article{{ section.articles|length == 1 ? '' : 's' }}</p>
+            <ul>
+              {% for article in section.articles|slice(0, 5) %}
+                <li><a href="{{ article.read_url }}">{{ article.title|e }}</a></li>
               {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    {% endfor %}
-  {% endif %}
+              {% if section.articles|length > 5 %}
+                <li class="admin-text-muted">+ {{ section.articles|length - 5 }} more in sidebar</li>
+              {% endif %}
+            </ul>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
 {% endblock %}

@@ -15,6 +15,5 @@ final class KnowledgeBasePluginServiceProvider implements PluginServiceProviderI
         // Do not registerPluginReservedSlugs(['kb']) — that blocks public_content.php from serving entries.
 
         $context->registerAdminNavItem('Knowledge Base', 'plugin.knowledge_base_plugin.index');
-        $context->registerAdminNavItem('Knowledge Base settings', 'plugin.knowledge_base_plugin.settings');
     }
 }

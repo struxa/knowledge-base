@@ -1,0 +1,39 @@
+<nav class="kb-wiki-nav" aria-label="Knowledge Base articles">
+  <div class="kb-wiki-nav-head">
+    <p class="kb-wiki-nav-title">Documentation</p>
+    <a
+      class="kb-wiki-nav-home{% if kb_page == 'home' %} is-active{% endif %}"
+      href="{{ url_for('plugin.knowledge_base_plugin.index') }}"
+    >Overview</a>
+  </div>
+
+  {% if sections is empty %}
+    <p class="admin-text-muted" style="padding: 0 0.5rem; font-size: 0.88rem;">No articles yet.</p>
+  {% else %}
+    {% for section in sections %}
+      <div class="kb-wiki-section">
+        <h2 class="kb-wiki-section-title">{{ section.section_label|e }}</h2>
+        <ul class="kb-wiki-articles">
+          {% for article in section.articles %}
+            <li>
+              <a
+                href="{{ article.read_url }}"
+                class="{% if kb_current_slug is defined and kb_current_slug == article.slug %}is-active{% endif %}"
+              >{{ article.title|e }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="kb-wiki-nav-foot">
+    <a
+      href="{{ url_for('plugin.knowledge_base_plugin.settings') }}"
+      class="{% if kb_page == 'settings' %}is-active{% endif %}"
+    >Settings</a>
+    {% if public_visible %}
+      <a href="/{{ content_type_slug }}" target="_blank" rel="noopener">View public site</a>
+    {% endif %}
+  </div>
+</nav>

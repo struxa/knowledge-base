@@ -1,0 +1,63 @@
+{% extends '@plugin_knowledge_base_plugin/admin/_layout.twig' %}
+
+{% block admin_title %}{{ article.title|e }} — Knowledge Base{% endblock %}
+
+{% block admin_hero_title %}
+  <h1 class="admin-hero-title">{{ article.title|e }}</h1>
+{% endblock %}
+
+{% block admin_hero_sub %}
+  <p class="admin-hero-sub">
+    {{ article.section_label|e }}
+    {% if public_visible and article.public_url %}
+      · <a href="{{ article.public_url }}" target="_blank" rel="noopener">Public page</a>
+    {% endif %}
+  </p>
+{% endblock %}
+
+{% block admin_hero_actions %}
+  {% if article.edit_url %}
+    <a class="admin-btn admin-btn--primary" href="{{ article.edit_url }}">Edit article</a>
+  {% endif %}
+  <a class="admin-btn admin-btn--secondary" href="{{ url_for('plugin.knowledge_base_plugin.index') }}">Overview</a>
+{% endblock %}
+
+{% block kb_wiki_main %}
+  <article class="kb-wiki-article">
+    <div class="kb-wiki-actions">
+      {% if article.edit_url %}
+        <a class="admin-btn admin-btn--sm admin-btn--secondary" href="{{ article.edit_url }}">Edit in Content</a>
+      {% endif %}
+      {% if public_visible and article.public_url %}
+        <a class="admin-btn admin-btn--sm admin-btn--ghost" href="{{ article.public_url }}" target="_blank" rel="noopener">View on storefront</a>
+      {% endif %}
+    </div>
+
+    {% if article.summary %}
+      <p class="kb-wiki-article-summary">{{ article.summary|e }}</p>
+    {% endif %}
+
+    <div class="kb-wiki-prose">
+      {{ article.body|raw }}
+    </div>
+
+    {% if article.prev or article.next %}
+      <nav class="kb-wiki-pager" aria-label="Article navigation">
+        {% if article.prev %}
+          <a href="{{ url_for('plugin.knowledge_base_plugin.read', { slug: article.prev.slug }) }}">
+            <span class="kb-wiki-pager-label">Previous</span>
+            {{ article.prev.title|e }}
+          </a>
+        {% else %}
+          <span></span>
+        {% endif %}
+        {% if article.next %}
+          <a href="{{ url_for('plugin.knowledge_base_plugin.read', { slug: article.next.slug }) }}" style="text-align: right; margin-left: auto;">
+            <span class="kb-wiki-pager-label">Next</span>
+            {{ article.next.title|e }}
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  </article>
+{% endblock %}

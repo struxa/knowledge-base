@@ -1,0 +1,16 @@
+{% extends 'admin/base.twig' %}
+
+{% block admin_body_class %}admin-body--dash-ref admin-body--kb-wiki{% endblock %}
+
+{% block admin_head %}
+  {% include '@plugin_knowledge_base_plugin/admin/_styles.twig' %}
+{% endblock %}
+
+{% block admin_content %}
+  <div class="kb-wiki">
+    {% include '@plugin_knowledge_base_plugin/admin/_sidebar.twig' %}
+    <div class="kb-wiki-main">
+      {% block kb_wiki_main %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}

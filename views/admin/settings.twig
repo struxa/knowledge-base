@@ -1,4 +1,4 @@
-{% extends 'admin/base.twig' %}
+{% extends '@plugin_knowledge_base_plugin/admin/_layout.twig' %}
 
 {% block admin_title %}Knowledge Base settings{% endblock %}
 
@@ -10,12 +10,8 @@
   <p class="admin-hero-sub">Control whether documentation is published on the public site. The wiki is always available in the admin.</p>
 {% endblock %}
 
-{% block admin_hero_actions %}
-  <a class="admin-btn admin-btn--secondary" href="{{ url_for('plugin.knowledge_base_plugin.index') }}">Browse wiki</a>
-{% endblock %}
-
-{% block admin_content %}
-  <section class="admin-section admin-section--narrow">
+{% block kb_wiki_main %}
+  <section class="admin-section admin-section--narrow" style="padding-top: 0;">
     <form class="admin-form" method="post" action="{{ url_for('plugin.knowledge_base_plugin.settings.save') }}">
       <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
 
@@ -43,7 +39,7 @@
     <p class="admin-prose">
       <strong>Content type:</strong> On activation, the plugin creates the <code>kb</code> content type with
       <em>summary</em> and <em>body</em> fields plus a <em>KB section</em> taxonomy (Getting started, Editors, Developers, …).
-      Default articles are seeded once on first visit to Browse wiki.
+      Default articles are seeded once on first visit.
     </p>
   </div>
 {% endblock %}
