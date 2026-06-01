@@ -1,0 +1,49 @@
+{% extends 'admin/base.twig' %}
+
+{% block admin_title %}Knowledge Base settings{% endblock %}
+
+{% block admin_hero_title %}
+  <h1 class="admin-hero-title">Knowledge Base settings</h1>
+{% endblock %}
+
+{% block admin_hero_sub %}
+  <p class="admin-hero-sub">Control whether documentation is published on the public site. The wiki is always available in the admin.</p>
+{% endblock %}
+
+{% block admin_hero_actions %}
+  <a class="admin-btn admin-btn--secondary" href="{{ url_for('plugin.knowledge_base_plugin.index') }}">Browse wiki</a>
+{% endblock %}
+
+{% block admin_content %}
+  <section class="admin-section admin-section--narrow">
+    <form class="admin-form" method="post" action="{{ url_for('plugin.knowledge_base_plugin.settings.save') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+
+      <fieldset class="admin-fieldset">
+        <legend class="admin-fieldset-legend">Storefront</legend>
+
+        <label class="admin-check">
+          <input type="checkbox" name="public_visible" value="1"{% if public_visible %} checked{% endif %} />
+          <span>Visible on storefront</span>
+        </label>
+        <p class="admin-help">
+          When enabled, the <strong>Knowledge Base</strong> content type (<code>{{ content_type_slug }}</code>) gets a public route.
+          Visitors can browse articles at <code>/{{ content_type_slug }}</code> and <code>/{{ content_type_slug }}/{slug}</code>
+          using your active theme’s content templates. When disabled, articles remain editable in the admin only.
+        </p>
+      </fieldset>
+
+      <div class="admin-form-actions">
+        <button type="submit" class="admin-btn admin-btn--primary">Save settings</button>
+      </div>
+    </form>
+  </section>
+
+  <div class="admin-callout">
+    <p class="admin-prose">
+      <strong>Content type:</strong> On activation, the plugin creates the <code>kb</code> content type with
+      <em>summary</em> and <em>body</em> fields plus a <em>KB section</em> taxonomy (Getting started, Editors, Developers, …).
+      Default articles are seeded once on first visit to Browse wiki.
+    </p>
+  </div>
+{% endblock %}

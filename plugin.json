@@ -1,0 +1,24 @@
+{
+  "name": "Knowledge Base",
+  "slug": "knowledge-base-plugin",
+  "version": "1.0.0",
+  "author": "Struxa",
+  "description": "Built-in Struxa CMS documentation wiki for staff (always available in admin). Optionally publish articles on the storefront at /kb with a dedicated content type and section taxonomy.",
+  "requires_cms_version": "1.1.33",
+  "requires_php": "8.2",
+  "category": "documentation",
+  "tags": ["docs", "wiki", "knowledge-base", "help"],
+  "main_class": "KnowledgeBasePlugin\\KnowledgeBasePluginServiceProvider",
+  "enabled_by_default": false,
+  "nested_admin_nav": true,
+  "capabilities": ["database.read", "database.write", "admin.nav", "frontend.render", "settings.write"],
+  "autoload": {
+    "psr4": {
+      "KnowledgeBasePlugin\\": "src/"
+    }
+  },
+  "database": {
+    "migrations": "migrations",
+    "tables": []
+  }
+}
