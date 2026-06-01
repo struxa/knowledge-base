@@ -112,6 +112,104 @@ final class KnowledgeBaseProvisioner
         return ['seeded' => $seeded, 'skipped' => $skipped, 'errors' => $errors];
     }
 
+    /**
+     * Updates bundled wiki article HTML when WIKI_CONTENT_VERSION increases.
+     *
+     * @return array{updated: int, created: int, skipped: int, errors: list<string>}
+     */
+    public function syncWikiArticlesFromCatalog(): array
+    {
+        $targetVersion = KnowledgeBaseSettings::WIKI_CONTENT_VERSION;
+        if (KnowledgeBaseSettings::wikiContentVersion($this->pdo) >= $targetVersion) {
+            return ['updated' => 0, 'created' => 0, 'skipped' => 0, 'errors' => []];
+        }
+
+        $type = $this->types->findBySlug(KnowledgeBaseSettings::CONTENT_TYPE_SLUG);
+        if ($type === null) {
+            return ['updated' => 0, 'created' => 0, 'skipped' => 0, 'errors' => ['Knowledge Base content type (kb) is missing.']];
+        }
+
+        $fieldIds = $this->fieldIdsForType($type->id);
+        if (!isset($fieldIds['body'], $fieldIds['summary'])) {
+            return ['updated' => 0, 'created' => 0, 'skipped' => 0, 'errors' => ['Knowledge Base fields (body, summary) are missing.']];
+        }
+
+        $articles = KnowledgeBaseArticleCatalog::articles();
+        if ($articles === []) {
+            return ['updated' => 0, 'created' => 0, 'skipped' => 0, 'errors' => ['Wiki article data is missing.']];
+        }
+
+        $sectionTermIds = $this->sectionTermIdsBySlug($type->id);
+        $updated = 0;
+        $created = 0;
+        $skipped = 0;
+        $errors = [];
+
+        foreach ($articles as $article) {
+            $slug = (string) ($article['slug'] ?? '');
+            if ($slug === '') {
+                continue;
+            }
+
+            $title = (string) ($article['title'] ?? $slug);
+            $summary = (string) ($article['summary'] ?? '');
+            $body = (string) ($article['body'] ?? '');
+            $sectionSlug = (string) ($article['section'] ?? '');
+            $termId = $sectionTermIds[$sectionSlug] ?? null;
+
+            $existing = $this->entries->findByTypeAndSlug($type->id, $slug);
+            try {
+                if ($existing === null) {
+                    $entryId = $this->insertPublishedEntry($type->id, $title, $slug, $title, $summary);
+                    ++$created;
+                } else {
+                    $entryId = $existing->id;
+                    $this->entries->update(
+                        $entryId,
+                        $title,
+                        $slug,
+                        $existing->status,
+                        $existing->featuredImageId,
+                        $title,
+                        $summary,
+                        $existing->focusKeyphrase,
+                        $existing->canonicalUrl,
+                        $existing->seoNoindex,
+                        $existing->ogTitle,
+                        $existing->ogDescription,
+                        $existing->ogImageId,
+                        $existing->twitterTitle,
+                        $existing->twitterDescription,
+                        $existing->twitterImageId,
+                        $existing->schemaJson,
+                        $existing->publishedAt,
+                        $existing->scheduledPublishAt,
+                        $existing->scheduledUnpublishAt,
+                    );
+                    ++$updated;
+                }
+
+                $this->values->upsert($entryId, $fieldIds['summary'], $summary);
+                $this->values->upsert($entryId, $fieldIds['body'], $body);
+
+                if ($termId !== null) {
+                    $this->entryTaxonomies->replaceForEntry($entryId, [$termId]);
+                }
+            } catch (\Throwable $e) {
+                $errors[] = $slug . ': ' . $e->getMessage();
+            }
+        }
+
+        if ($errors === []) {
+            KnowledgeBaseSettings::setWikiContentVersion($this->pdo, $targetVersion);
+            if (!KnowledgeBaseSettings::isWikiSeeded($this->pdo)) {
+                KnowledgeBaseSettings::markWikiSeeded($this->pdo);
+            }
+        }
+
+        return ['updated' => $updated, 'created' => $created, 'skipped' => $skipped, 'errors' => $errors];
+    }
+
     public function setPublicVisible(bool $visible): void
     {
         $type = $this->types->findBySlug(KnowledgeBaseSettings::CONTENT_TYPE_SLUG);

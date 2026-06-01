@@ -21,26 +21,69 @@ final class KnowledgeBaseArticleCatalog
             return $cached;
         }
 
-        $path = dirname(__DIR__) . '/data/wiki-articles.json';
-        if (!is_readable($path)) {
-            $cached = [];
-
-            return $cached;
+        $articles = self::loadFromArticlesDirectory();
+        if ($articles === []) {
+            $articles = self::loadFromLegacyFile();
         }
 
+        $cached = $articles;
+
+        return $cached;
+    }
+
+    /**
+     * @return list<array{title: string, slug: string, section: string, summary: string, body: string}>
+     */
+    private static function loadFromArticlesDirectory(): array
+    {
+        $dir = dirname(__DIR__) . '/data/articles';
+        if (!is_dir($dir)) {
+            return [];
+        }
+
+        $files = glob($dir . '/*.json');
+        if ($files === false || $files === []) {
+            return [];
+        }
+
+        sort($files);
+        $articles = [];
+        foreach ($files as $path) {
+            foreach (self::decodeArticleFile($path) as $row) {
+                $articles[] = $row;
+            }
+        }
+
+        return $articles;
+    }
+
+    /**
+     * @return list<array{title: string, slug: string, section: string, summary: string, body: string}>
+     */
+    private static function loadFromLegacyFile(): array
+    {
+        $path = dirname(__DIR__) . '/data/wiki-articles.json';
+        if (!is_readable($path)) {
+            return [];
+        }
+
+        return self::decodeArticleFile($path);
+    }
+
+    /**
+     * @return list<array{title: string, slug: string, section: string, summary: string, body: string}>
+     */
+    private static function decodeArticleFile(string $path): array
+    {
         try {
             /** @var mixed $decoded */
             $decoded = json_decode((string) file_get_contents($path), true, 64, JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
-            $cached = [];
-
-            return $cached;
+            return [];
         }
 
         if (!is_array($decoded)) {
-            $cached = [];
-
-            return $cached;
+            return [];
         }
 
         $articles = [];
@@ -65,8 +108,6 @@ final class KnowledgeBaseArticleCatalog
             ];
         }
 
-        $cached = $articles;
-
-        return $cached;
+        return $articles;
     }
 }

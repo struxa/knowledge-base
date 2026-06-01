@@ -32,6 +32,7 @@ return function (App $app, PluginBootContext $ctx): void {
     $ensureWiki = static function () use ($pdo): KnowledgeBaseProvisioner {
         $provisioner = new KnowledgeBaseProvisioner($pdo);
         $provisioner->seedWikiArticlesIfNeeded();
+        $provisioner->syncWikiArticlesFromCatalog();
 
         return $provisioner;
     };

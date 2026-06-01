@@ -14,6 +14,11 @@ final class KnowledgeBaseSettings
 
     public const KEY_WIKI_SEEDED = 'plugin.knowledge_base_plugin.wiki_seeded';
 
+    public const KEY_WIKI_CONTENT_VERSION = 'plugin.knowledge_base_plugin.wiki_content_version';
+
+    /** Bump when bundled wiki article HTML changes; triggers sync on next admin KB visit. */
+    public const WIKI_CONTENT_VERSION = 2;
+
     public const CONTENT_TYPE_SLUG = 'kb';
 
     public static function isPublicVisible(?PDO $pdo = null): bool
@@ -53,6 +58,25 @@ final class KnowledgeBaseSettings
     {
         $repo = new SettingsRepository($pdo);
         $repo->upsert(self::KEY_WIKI_SEEDED, '1', true);
+        Settings::reload($pdo);
+    }
+
+    public static function wikiContentVersion(?PDO $pdo = null): int
+    {
+        $raw = Settings::get(self::KEY_WIKI_CONTENT_VERSION, '0');
+        if ($raw === null && $pdo !== null) {
+            $repo = new SettingsRepository($pdo);
+            $all = $repo->allKeyValues();
+            $raw = $all[self::KEY_WIKI_CONTENT_VERSION] ?? '0';
+        }
+
+        return max(0, (int) $raw);
+    }
+
+    public static function setWikiContentVersion(PDO $pdo, int $version): void
+    {
+        $repo = new SettingsRepository($pdo);
+        $repo->upsert(self::KEY_WIKI_CONTENT_VERSION, (string) max(0, $version), true);
         Settings::reload($pdo);
     }
 }

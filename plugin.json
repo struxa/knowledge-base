@@ -1,9 +1,9 @@
 {
   "name": "Knowledge Base",
   "slug": "knowledge-base-plugin",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "Struxa",
-  "description": "Built-in Struxa CMS documentation wiki for staff with in-admin sidebar navigation and article reader. Optionally publish articles on the storefront at /kb with a dedicated content type and section taxonomy.",
+  "description": "Built-in Struxa CMS documentation wiki for staff with in-admin sidebar navigation, detailed article library, and optional public storefront at /kb.",
   "requires_cms_version": "1.1.33",
   "requires_php": "8.2",
   "category": "documentation",
