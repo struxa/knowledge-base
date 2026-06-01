@@ -15,22 +15,22 @@ use PDO;
 
 final class KnowledgeBaseProvisioner
 {
-    private readonly ContentTypeRepository $types;
+    private ContentTypeRepository $types;
 
-    private readonly ContentFieldRepository $fields;
+    private ContentFieldRepository $fields;
 
-    private readonly ContentEntryRepository $entries;
+    private ContentEntryRepository $entries;
 
-    private readonly ContentEntryValueRepository $values;
+    private ContentEntryValueRepository $values;
 
-    private readonly TaxonomyRepository $taxonomies;
+    private TaxonomyRepository $taxonomies;
 
-    private readonly TaxonomyTermRepository $terms;
+    private TaxonomyTermRepository $terms;
 
-    private readonly ContentEntryTaxonomyRepository $entryTaxonomies;
+    private ContentEntryTaxonomyRepository $entryTaxonomies;
 
     public function __construct(
-        private readonly PDO $pdo,
+        private PDO $pdo,
     ) {
         $this->types = new ContentTypeRepository($pdo);
         $this->fields = new ContentFieldRepository($pdo);
@@ -60,12 +60,17 @@ final class KnowledgeBaseProvisioner
             return ['seeded' => 0, 'skipped' => 0, 'errors' => ['Knowledge Base fields (body, summary) are missing.']];
         }
 
+        $articles = KnowledgeBaseArticleCatalog::articles();
+        if ($articles === []) {
+            return ['seeded' => 0, 'skipped' => 0, 'errors' => ['Wiki article data is missing (data/wiki-articles.json). Reinstall the plugin from the catalog.']];
+        }
+
         $sectionTermIds = $this->sectionTermIdsBySlug($type->id);
         $seeded = 0;
         $skipped = 0;
         $errors = [];
 
-        foreach (KnowledgeBaseArticleCatalog::articles() as $article) {
+        foreach ($articles as $article) {
             $slug = (string) ($article['slug'] ?? '');
             if ($slug === '') {
                 continue;
@@ -79,28 +84,12 @@ final class KnowledgeBaseProvisioner
             $termId = $sectionTermIds[$sectionSlug] ?? null;
 
             try {
-                $entryId = $this->entries->insert(
+                $entryId = $this->insertPublishedEntry(
                     $type->id,
                     (string) ($article['title'] ?? $slug),
                     $slug,
-                    'published',
-                    null,
                     (string) ($article['title'] ?? $slug),
                     (string) ($article['summary'] ?? ''),
-                    null,
-                    null,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    gmdate('Y-m-d H:i:s'),
-                    null,
-                    null,
-                    null,
                 );
 
                 $this->values->upsert($entryId, $fieldIds['summary'], (string) ($article['summary'] ?? ''));
@@ -143,6 +132,57 @@ final class KnowledgeBaseProvisioner
         );
 
         KnowledgeBaseSettings::setPublicVisible($this->pdo, $visible);
+    }
+
+    private function insertPublishedEntry(
+        int $contentTypeId,
+        string $title,
+        string $slug,
+        string $seoTitle,
+        string $seoDescription,
+    ): int {
+        $publishedAt = gmdate('Y-m-d H:i:s');
+        $args = [
+            'contentTypeId' => $contentTypeId,
+            'title' => $title,
+            'slug' => $slug,
+            'status' => 'published',
+            'featuredImageId' => null,
+            'seoTitle' => $seoTitle,
+            'seoDescription' => $seoDescription,
+            'focusKeyphrase' => null,
+            'canonicalUrl' => null,
+            'seoNoindex' => false,
+            'ogTitle' => null,
+            'ogDescription' => null,
+            'ogImageId' => null,
+            'twitterTitle' => null,
+            'twitterDescription' => null,
+            'twitterImageId' => null,
+            'schemaJson' => null,
+            'publishedAt' => $publishedAt,
+            'scheduledPublishAt' => null,
+            'scheduledUnpublishAt' => null,
+            'createdBy' => null,
+        ];
+
+        $method = new \ReflectionMethod($this->entries, 'insert');
+        $ordered = [];
+        foreach ($method->getParameters() as $param) {
+            $name = $param->getName();
+            if (!array_key_exists($name, $args)) {
+                if ($name === 'focusKeyphrase') {
+                    continue;
+                }
+                throw new \RuntimeException('Unsupported ContentEntryRepository::insert signature.');
+            }
+            $ordered[] = $args[$name];
+        }
+
+        /** @var int $id */
+        $id = $method->invoke($this->entries, ...$ordered);
+
+        return $id;
     }
 
     /**

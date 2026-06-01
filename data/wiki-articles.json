@@ -1,0 +1,247 @@
+[
+    {
+        "title": "Introduction to Struxa CMS",
+        "slug": "introduction-to-struxa-cms",
+        "section": "getting-started",
+        "summary": "What Struxa is, who it is for, and how the pieces fit together.",
+        "body": "<h2>What is Struxa?</h2>\n<p><strong>Struxa CMS</strong> is a PHP content management system built on <strong>Slim 4</strong> and <strong>Twig</strong>. It targets teams who want structured content (custom types, fields, taxonomies), a full admin UI, optional commerce, headless APIs, and extension through <strong>plugins</strong> and <strong>themes</strong>—without running WordPress.</p>\n<h2>Core ideas</h2>\n<ul>\n<li><strong>Content types</strong> — You define models (blog, product, guide, page-like entries) with typed fields instead of one generic “post” table.</li>\n<li><strong>Themes</strong> — Storefront HTML/CSS/JS lives under <code>themes/{slug}/</code> with inheritance from parent themes.</li>\n<li><strong>Plugins</strong> — Features ship as isolated packages under <code>plugins/{slug}/</code> with manifests, migrations, and optional routes.</li>\n<li><strong>Settings &amp; menus</strong> — Site name, SEO defaults, and navigation are data-driven from the admin.</li>\n<li><strong>APIs</strong> — JSON REST and GraphQL expose entries and pages for mobile apps or SPAs.</li>\n</ul>\n<h2>Typical workflow</h2>\n<ol>\n<li>Install Struxa and run <code>composer migrate</code>.</li>\n<li>Activate the <strong>default</strong> theme (or install another from the catalog).</li>\n<li>Create content types or import a <strong>blueprint</strong> (blog, product store).</li>\n<li>Publish entries; optional commerce via Stripe.</li>\n<li>Extend with plugins (SEO helper, mailing list, Knowledge Base, …).</li>\n</ol>\n<p>Official developer docs also live in the repository <code>docs/</code> folder; this Knowledge Base mirrors that material for your team inside the admin.</p>"
+    },
+    {
+        "title": "Server requirements",
+        "slug": "server-requirements",
+        "section": "getting-started",
+        "summary": "PHP, extensions, database, and web server expectations.",
+        "body": "<h2>Minimum stack</h2>\n<ul>\n<li><strong>PHP</strong> 8.2 or newer</li>\n<li><strong>MySQL</strong> 8+ (or compatible MariaDB)</li>\n<li><strong>Composer</strong> 2.x for dependencies and migrations</li>\n</ul>\n<h2>Required PHP extensions</h2>\n<ul>\n<li><code>mbstring</code> — Unicode text handling</li>\n<li><code>pdo_mysql</code> — Database access</li>\n<li><code>json</code> — APIs and configuration</li>\n<li><code>curl</code> — Outbound HTTP (updates, Stripe, AI tools)</li>\n<li><code>gd</code> — Image compression and responsive thumbnails in the media library</li>\n</ul>\n<h2>Web server</h2>\n<p>Point the document root at <code>public/</code> with <code>public/index.php</code> as the front controller. For local development you can use:</p>\n<pre><code>composer serve</code></pre>\n<p>which runs PHP’s built-in server on port 8080.</p>\n<h2>Environment</h2>\n<p>Copy <code>.env.example</code> to <code>.env</code> and configure database credentials, <code>PHPAUTH_SITE_KEY</code> (32+ characters in production), and <code>PHPAUTH_SITE_URL</code>. Never commit <code>.env</code> to version control.</p>\n<h2>First-time database</h2>\n<p>Either open <code>/install.php</code> in a browser on an empty database, or run <code>composer migrate</code>, then <strong>remove</strong> <code>public/install.php</code> on production sites.</p>"
+    },
+    {
+        "title": "Feature overview",
+        "slug": "feature-overview",
+        "section": "getting-started",
+        "summary": "Extensive list of Struxa capabilities across admin, storefront, and integrations.",
+        "body": "<h2>Content &amp; editorial</h2>\n<ul>\n<li>Custom <strong>content types</strong> with many field types (text, textarea, richtext, number, boolean, select, URL, media, entry references, …)</li>\n<li><strong>Taxonomies</strong> (categories, tags) per content type</li>\n<li><strong>Revisions</strong> with compare and restore</li>\n<li><strong>Scheduled</strong> publish and unpublish</li>\n<li><strong>Trash</strong> and restore for entries</li>\n<li><strong>Block builder</strong> on supported types</li>\n<li><strong>Content lists</strong> — saved queries for Twig and APIs</li>\n<li><strong>Blueprints</strong> — import/export site structure packages</li>\n<li><strong>Config sync</strong> — diff and sync configuration between environments</li>\n</ul>\n<h2>Pages &amp; presentation</h2>\n<ul>\n<li>Static <strong>pages</strong> with optional block builder</li>\n<li><strong>Theme</strong> catalog install, inheritance, and <code>theme.json</code> settings</li>\n<li><strong>Menus</strong> for header/footer navigation</li>\n<li>Marketing homepage via theme <code>page/home.twig</code> or a designated CMS page as site front</li>\n</ul>\n<h2>Media &amp; SEO</h2>\n<ul>\n<li><strong>Media library</strong> with folders, compression, and responsive variants</li>\n<li>Per-entry and global <strong>SEO</strong> (title, description, Open Graph, Twitter, schema JSON)</li>\n<li><strong>Sitemaps</strong> and robots.txt</li>\n<li>SEO analysis helpers in admin</li>\n</ul>\n<h2>Users &amp; access</h2>\n<ul>\n<li>Staff accounts with <strong>roles</strong> and granular <strong>permissions</strong></li>\n<li>PHPAuth-powered login, 2FA support, password reset</li>\n<li>Customer accounts for commerce order history</li>\n</ul>\n<h2>Commerce</h2>\n<ul>\n<li>Sell <strong>content-type products</strong> via Stripe Checkout</li>\n<li>Cart, coupons, tax, shipping zones</li>\n<li>Digital downloads (file, URL, or unlocked entry)</li>\n<li>Order admin, refunds, CSV export</li>\n</ul>\n<h2>Extensions &amp; integration</h2>\n<ul>\n<li><strong>Plugin</strong> system with manifests, capabilities, filter hooks, events, background jobs</li>\n<li><strong>REST</strong> and <strong>GraphQL</strong> APIs with API keys</li>\n<li><strong>Mobile bootstrap</strong> API for companion apps</li>\n<li><strong>AI writing assistant</strong> (when configured)</li>\n<li><strong>Jobs queue</strong> for async maintenance</li>\n</ul>\n<h2>Operations</h2>\n<ul>\n<li>SQL <strong>migrations</strong> (<code>composer migrate</code>)</li>\n<li>Site health, maintenance tools, cache clear</li>\n<li>Plugin/theme catalog from struxapoint.com</li>\n<li>CI-friendly test and PHPStan scripts</li>\n</ul>"
+    },
+    {
+        "title": "Installation and first login",
+        "slug": "installation-and-first-login",
+        "section": "getting-started",
+        "summary": "Clone, configure, migrate, and sign in to the admin.",
+        "body": "<h2>Quick start</h2>\n<pre><code>git clone https://github.com/struxa/struxa.git\ncd struxa\ncp .env.example .env\n# Edit DB_* and PHPAUTH_* values\ncomposer install\ncomposer plugin-deps:prod\ncomposer migrate</code></pre>\n<h2>Web root</h2>\n<p>Configure Apache/Nginx/Caddy so the site root is <code>public/</code>. All requests should route to <code>index.php</code>.</p>\n<h2>First admin user</h2>\n<p>After migrations, register the first staff user via the installer or admin registration flow (depending on your deployment). Assign a role with full permissions (e.g. Administrator).</p>\n<h2>Post-install checklist</h2>\n<ul>\n<li>Set <strong>Settings</strong> → site name, default meta title/description</li>\n<li>Activate a <strong>theme</strong></li>\n<li>Configure <strong>Menus</strong> for header/footer</li>\n<li>Remove <code>public/install.php</code> on production</li>\n<li>Run <code>composer test</code> to verify the environment</li>\n</ul>"
+    },
+    {
+        "title": "Admin navigation overview",
+        "slug": "admin-navigation-overview",
+        "section": "general-users",
+        "summary": "How the admin sidebar is organized.",
+        "body": "<h2>Main areas</h2>\n<ul>\n<li><strong>Dashboard</strong> — Overview stats and shortcuts</li>\n<li><strong>Content</strong> — Entries grouped by content type</li>\n<li><strong>Pages</strong> — Standalone site pages</li>\n<li><strong>Media</strong> — Uploads and folders</li>\n<li><strong>Commerce</strong> — Orders, coupons, settings (when enabled)</li>\n<li><strong>Appearance</strong> — Themes and menus</li>\n<li><strong>Extensions</strong> — Plugins (install, activate, settings)</li>\n<li><strong>Tools</strong> — Blueprints, import/export, maintenance, site health</li>\n<li><strong>Settings</strong> — Global site configuration</li>\n<li><strong>System</strong> — Users, roles, API keys, updates</li>\n</ul>\n<p>Plugin screens appear under <strong>Extensions</strong>, often nested under the plugin name when <code>nested_admin_nav</code> is set in <code>plugin.json</code>.</p>"
+    },
+    {
+        "title": "Users, roles, and permissions",
+        "slug": "users-roles-and-permissions",
+        "section": "general-users",
+        "summary": "Who can do what in the admin.",
+        "body": "<h2>Staff users</h2>\n<p>CMS staff sign in at <code>/admin</code>. Each user has one or more <strong>roles</strong>; roles grant <strong>permissions</strong> such as <code>edit_content</code>, <code>manage_content_types</code>, or <code>manage_plugins</code>.</p>\n<h2>Best practice</h2>\n<ul>\n<li>Give editors only content permissions they need</li>\n<li>Restrict plugin installation to technical roles</li>\n<li>Enable <strong>two-factor authentication</strong> for privileged accounts</li>\n</ul>\n<h2>Customers</h2>\n<p>Storefront customers (commerce) use PHPAuth accounts on the public site for order history—not the CMS staff admin.</p>"
+    },
+    {
+        "title": "Site settings and branding",
+        "slug": "site-settings-and-branding",
+        "section": "general-users",
+        "summary": "Global settings that affect SEO and layout.",
+        "body": "<h2>Settings screen</h2>\n<p><strong>Admin → Settings</strong> stores key/value pairs in <code>cms_settings</code>. Common keys include site name, tagline, default meta title/description, and active theme.</p>\n<h2>Branding</h2>\n<p>Upload a logo via the media library and reference it in theme settings or templates. Theme-specific options live in <code>theme.json</code> and resolve to <code>theme_settings</code> in Twig.</p>\n<h2>Homepage</h2>\n<p>You can set a published CMS page as the public homepage, or use the active theme’s <code>page/home.twig</code> when no page is designated.</p>"
+    },
+    {
+        "title": "Menus and navigation",
+        "slug": "menus-and-navigation",
+        "section": "general-users",
+        "summary": "Building header and footer links.",
+        "body": "<h2>Menu locations</h2>\n<p>Under <strong>Appearance → Menus</strong>, assign items to locations such as <code>header</code> and <code>footer</code>. Themes read these via Twig globals.</p>\n<h2>Item types</h2>\n<ul>\n<li>Custom URL</li>\n<li>Link to a CMS page</li>\n<li>Link to a content entry (when the type has a public route)</li>\n</ul>\n<p>Plugins may add items through the <code>menu.items</code> filter hook.</p>"
+    },
+    {
+        "title": "Pages vs content entries",
+        "slug": "pages-vs-content",
+        "section": "general-users",
+        "summary": "When to use Pages versus Content types.",
+        "body": "<h2>Pages</h2>\n<p><strong>Pages</strong> are ideal for fixed site structure: About, Contact, legal text. They support block builder layouts and optional SEO fields.</p>\n<h2>Content types</h2>\n<p><strong>Content types</strong> suit repeating models: blog posts, products, guides, documentation articles. Each type has its own fields and optional archive URL (<code>/{typeSlug}</code>).</p>\n<h2>Choosing</h2>\n<p>If you need many similar items with custom fields and listings, use a content type. If you need one-off layouts, use a page.</p>"
+    },
+    {
+        "title": "Media library",
+        "slug": "media-library",
+        "section": "general-users",
+        "summary": "Uploading and reusing images and files.",
+        "body": "<h2>Uploads</h2>\n<p>Files land under <code>public/uploads/</code> (excluded from git). The admin media UI supports folders, search, and picking assets for featured images or richtext embeds.</p>\n<h2>Processing</h2>\n<p>With the <code>gd</code> extension enabled, Struxa can compress uploads and generate responsive image variants for faster storefronts.</p>\n<h2>Permissions</h2>\n<p>Roles without media upload permission can still select existing assets where editors allow it.</p>"
+    },
+    {
+        "title": "Search and sitemaps",
+        "slug": "search-and-sitemaps",
+        "section": "general-users",
+        "summary": "Helping visitors and search engines find content.",
+        "body": "<h2>Sitemaps</h2>\n<p>Published entries and pages with public routes are included in the XML sitemap. Warm or rebuild sitemaps from maintenance tools when large imports complete.</p>\n<h2>SEO defaults</h2>\n<p>Set global meta title and description under Settings so empty entries still produce reasonable snippets.</p>\n<h2>On-site search</h2>\n<p>Core provides search routes; themes can style results. For advanced search, consider a plugin or headless integration.</p>"
+    },
+    {
+        "title": "Backups and maintenance",
+        "slug": "backups-and-maintenance",
+        "section": "general-users",
+        "summary": "Keeping the site healthy.",
+        "body": "<h2>Backups</h2>\n<ul>\n<li>Database — regular mysqldump or managed host backups</li>\n<li>Files — <code>public/uploads/</code> and any custom <code>storage/</code> data</li>\n<li>Code — git for core, themes, and plugins</li>\n</ul>\n<h2>Maintenance tools</h2>\n<p><strong>Admin → Tools → Maintenance</strong> includes cache clear, scheduled job hints, and health checks. Run <code>composer cache:clear</code> from CLI when deploying.</p>\n<h2>Updates</h2>\n<p>Apply Struxa CMS updates via the in-app updater or documented ZIP merge process; bump only upstream version files when merging a release.</p>"
+    },
+    {
+        "title": "Understanding content types",
+        "slug": "understanding-content-types",
+        "section": "editors",
+        "summary": "The building blocks of structured content.",
+        "body": "<h2>Definition</h2>\n<p>A <strong>content type</strong> is a template for entries: name, URL slug, flags (public route, SEO, featured image), and a set of <strong>fields</strong>.</p>\n<h2>Examples</h2>\n<ul>\n<li><strong>Blog</strong> — title, excerpt, body, author</li>\n<li><strong>Product</strong> — price, SKU, stock, digital delivery fields</li>\n<li><strong>Knowledge Base</strong> — summary, body, section taxonomy</li>\n</ul>\n<p>Manage types under <strong>Content → Content types</strong> if you have the <code>manage_content_types</code> permission.</p>"
+    },
+    {
+        "title": "Creating and editing entries",
+        "slug": "creating-and-editing-entries",
+        "section": "editors",
+        "summary": "Day-to-day editorial workflow.",
+        "body": "<h2>Create</h2>\n<ol>\n<li>Go to <strong>Content</strong> and pick a type</li>\n<li>Click <strong>New entry</strong></li>\n<li>Fill required fields; set status to <strong>Published</strong> when ready</li>\n</ol>\n<h2>Slug</h2>\n<p>Each entry has a URL slug (auto-generated from title). Keep slugs short, lowercase, and hyphenated.</p>\n<h2>Featured image</h2>\n<p>When the type supports it, pick a media asset for cards and social previews.</p>"
+    },
+    {
+        "title": "Taxonomies, categories, and tags",
+        "slug": "taxonomies-categories-and-tags",
+        "section": "editors",
+        "summary": "Organizing entries with terms.",
+        "body": "<h2>Per-type taxonomies</h2>\n<p>Each content type can have vocabularies (e.g. Categories, Tags). Terms attach to entries in the entry editor.</p>\n<h2>Hierarchical categories</h2>\n<p>Category-style taxonomies support parent/child terms for nested navigation.</p>\n<h2>Public archives</h2>\n<p>When the content type has a public route, taxonomy archives may be available at <code>/{type}/{taxonomy}/{term}</code> depending on theme templates.</p>"
+    },
+    {
+        "title": "SEO and metadata for editors",
+        "slug": "seo-and-metadata-for-editors",
+        "section": "editors",
+        "summary": "Titles, descriptions, and social cards.",
+        "body": "<h2>Per-entry SEO</h2>\n<p>On types with <strong>supports_seo</strong>, fill SEO title and description. If left blank, the entry title and summary often serve as fallbacks.</p>\n<h2>Social</h2>\n<p>Open Graph and Twitter fields control how links appear when shared. Use the featured image when possible.</p>\n<h2>Noindex</h2>\n<p>Enable <strong>noindex</strong> for thank-you pages or internal-only public URLs you do not want indexed.</p>"
+    },
+    {
+        "title": "Revisions and workflow",
+        "slug": "revisions-and-workflow",
+        "section": "editors",
+        "summary": "Drafts, review, and history.",
+        "body": "<h2>Statuses</h2>\n<ul>\n<li><strong>Draft</strong> — not public</li>\n<li><strong>Published</strong> — visible when publish date is reached</li>\n<li><strong>In review</strong> — optional editorial state (permission-gated)</li>\n</ul>\n<h2>Revisions</h2>\n<p>Open the revisions panel on an entry to compare versions and restore older content. Requires appropriate permissions.</p>\n<h2>Scheduling</h2>\n<p>Set future <strong>published_at</strong> or <strong>scheduled unpublish</strong> dates; the job worker applies them on schedule.</p>"
+    },
+    {
+        "title": "Blueprints import and export",
+        "slug": "blueprints-import-export",
+        "section": "editors",
+        "summary": "Moving structure between sites.",
+        "body": "<h2>Blueprints</h2>\n<p>JSON packages can describe content types, fields, taxonomies, sample entries, menus, and settings. Import from <strong>Tools → Blueprints</strong>.</p>\n<h2>Use cases</h2>\n<ul>\n<li>Spin up a demo blog or product store quickly</li>\n<li>Clone structure from staging to production (entries optional)</li>\n</ul>\n<p>Always review imported slugs for conflicts with existing types.</p>"
+    },
+    {
+        "title": "Content lists and entry references",
+        "slug": "content-lists-and-entry-refs",
+        "section": "editors",
+        "summary": "Relating content and powering dynamic blocks.",
+        "body": "<h2>Content lists</h2>\n<p>Saved filters (type, taxonomy, sort) usable in Twig and APIs—similar to “views” in other CMSs. See <code>docs/content-lists.md</code>.</p>\n<h2>Entry references</h2>\n<p>Fields of type <code>entry_refs</code> link entries to other entries (related articles, featured products). The picker searches published entries by type.</p>"
+    },
+    {
+        "title": "Developer getting started",
+        "slug": "developer-getting-started",
+        "section": "developers",
+        "summary": "Where code lives and how requests flow.",
+        "body": "<h2>Repository layout</h2>\n<ul>\n<li><code>public/</code> — Web root</li>\n<li><code>src/</code> — Application (<code>App\\</code> namespace)</li>\n<li><code>routes/</code> — Route groups included from bootstrap</li>\n<li><code>templates/</code> — Core admin and marketing Twig</li>\n<li><code>themes/</code> — Storefront themes</li>\n<li><code>plugins/</code> — Extensions</li>\n<li><code>database/migrations/</code> — Core schema</li>\n</ul>\n<h2>Request lifecycle</h2>\n<p><code>public/index.php</code> loads Composer, <code>.env</code>, connects MySQL, boots settings, builds Slim, registers routes (core → plugin public → plugin admin → content catch-alls), then dispatches.</p>"
+    },
+    {
+        "title": "Project structure and routing",
+        "slug": "project-structure-and-routing",
+        "section": "developers",
+        "summary": "Slim routes and middleware.",
+        "body": "<h2>Route files</h2>\n<p>Core groups live in <code>routes/*.php</code>. Plugins add <code>routes/public.php</code> and <code>routes/admin.php</code> receiving <code>(App $app, PluginBootContext $ctx)</code>.</p>\n<h2>Middleware</h2>\n<p>Staff routes use <code>RequireCmsStaff</code>. CSRF tokens protect POST forms. Permissions gate sensitive actions.</p>\n<h2>Example: named route</h2>\n<pre><code>$group->get('/my-tool', $handler)-&gt;setName('admin.my_tool');</code></pre>"
+    },
+    {
+        "title": "Database migrations and CLI",
+        "slug": "database-migrations-cli",
+        "section": "developers",
+        "summary": "Schema changes and bin/cms.php.",
+        "body": "<h2>Migrations</h2>\n<p>Ordered <code>.sql</code> files in <code>database/migrations/</code>. Run:</p>\n<pre><code>composer migrate</code></pre>\n<h2>CLI</h2>\n<pre><code>php bin/cms.php</code></pre>\n<p>Subcommands include job workers, cache tools, and plugin diagnostics depending on your build.</p>\n<h2>Plugin migrations</h2>\n<p>Plugin SQL runs on activation into <code>cms_plugin_migrations</code>.</p>"
+    },
+    {
+        "title": "Filter hooks and events",
+        "slug": "filter-hooks-and-events",
+        "section": "developers",
+        "summary": "Extending behavior without forking core.",
+        "body": "<h2>Filters</h2>\n<p>Transform data as it flows through core—SEO meta, menus, API payloads, HTML sanitization. Register in plugin <code>boot()</code>:</p>\n<pre><code>use App\\Filter\\FilterHook;\n\n$context->addFilter(FilterHook::MENU_ITEMS, function (array $items, array $ctx): array {\n    $items[] = ['label' => 'Status', 'href' => '/status', 'target' => '', 'css_class' => ''];\n    return $items;\n}, 10);</code></pre>\n<h2>Events</h2>\n<p>React to saves and logins with <code>$context->listenEvent(ContentEntrySavedEvent::class, …)</code>. Declare hooks in <code>plugin.json</code> when using strict capabilities.</p>"
+    },
+    {
+        "title": "REST and GraphQL API",
+        "slug": "rest-and-graphql-api",
+        "section": "developers",
+        "summary": "Headless access to content.",
+        "body": "<h2>API keys</h2>\n<p>Create keys under <strong>System → API keys</strong>. Send the key header documented in your deployment.</p>\n<h2>REST</h2>\n<p>JSON endpoints expose entries, pages, and lists for mobile or JavaScript frontends.</p>\n<h2>GraphQL</h2>\n<p>Query structured content with the bundled GraphQL server when enabled. Use filters <code>api.entry.response</code> to enrich payloads from plugins.</p>"
+    },
+    {
+        "title": "Creating a plugin",
+        "slug": "creating-a-plugin",
+        "section": "plugin-developers",
+        "summary": "From folder to activation.",
+        "body": "<h2>Layout</h2>\n<pre><code>plugins/my-plugin/\n  plugin.json\n  src/MyPluginServiceProvider.php\n  routes/admin.php\n  routes/public.php   # optional\n  views/\n  migrations/</code></pre>\n<h2>Slug rules</h2>\n<p>Directory name must match <code>plugin.json</code> → <code>slug</code> (lowercase, hyphens).</p>\n<h2>Activate</h2>\n<p><strong>Extensions → Plugins → Activate</strong> runs migrations and calls <code>boot()</code>.</p>"
+    },
+    {
+        "title": "Plugin manifest and capabilities",
+        "slug": "plugin-manifest-and-capabilities",
+        "section": "plugin-developers",
+        "summary": "Declaring requirements and permissions.",
+        "body": "<h2>Manifest</h2>\n<p><code>plugin.json</code> includes <code>requires_cms_version</code>, <code>requires_php</code>, <code>requires_plugins</code>, <code>capabilities</code>, and <code>hooks</code>.</p>\n<h2>Capabilities</h2>\n<ul>\n<li><code>database.read</code> / <code>database.write</code> — PDO access</li>\n<li><code>admin.nav</code> — Admin routes and menu items</li>\n<li><code>frontend.render</code> — Public routes and reserved slugs</li>\n<li><code>settings.write</code> — Persist plugin settings</li>\n</ul>\n<p>Undeclared plugins run in legacy permissive mode but should still declare hooks they use.</p>"
+    },
+    {
+        "title": "Plugin routes and admin navigation",
+        "slug": "plugin-routes-and-admin-nav",
+        "section": "plugin-developers",
+        "summary": "Wiring screens into the admin.",
+        "body": "<h2>Admin routes</h2>\n<pre><code>return function (App $app, PluginBootContext $ctx): void {\n    $app->group('/admin', function ($group) use ($ctx) {\n        $group->get('/my-plugin', $handler)-&gt;setName('plugin.my_plugin.admin');\n    })-&gt;add(new RequireCmsStaff($ctx->auth(), $ctx->pdo()));\n};</code></pre>\n<h2>Nav item</h2>\n<pre><code>$context->registerAdminNavItem('My plugin', 'plugin.my_plugin.admin');</code></pre>\n<h2>Twig</h2>\n<p>Render with <code>@plugin_my_plugin/...</code> namespace mapped to <code>views/</code>.</p>"
+    },
+    {
+        "title": "Plugin migrations and background jobs",
+        "slug": "plugin-migrations-and-jobs",
+        "section": "plugin-developers",
+        "summary": "SQL on activate and async work.",
+        "body": "<h2>Migrations</h2>\n<p>Place <code>.sql</code> files in <code>migrations/</code>; they run once per site on activation. Document tables in <code>plugin.json</code> → <code>database.tables</code>.</p>\n<h2>Jobs</h2>\n<pre><code>$context->registerJobHandler('my-plugin.rebuild', function (Job $job, JobHandlerContext $ctx): array {\n    // work…\n    return ['ok' => true, 'message' => 'Done'];\n});</code></pre>\n<p>Cron: <code>php bin/cms.php jobs:dispatch &amp;&amp; php bin/cms.php jobs:work</code></p>"
+    },
+    {
+        "title": "Creating a theme",
+        "slug": "creating-a-theme",
+        "section": "theme-developers",
+        "summary": "theme.json, views, and assets.",
+        "body": "<h2>Structure</h2>\n<pre><code>themes/my-theme/\n  theme.json\n  views/\n  assets/</code></pre>\n<h2>Activation</h2>\n<p>Install from zip or copy into <code>themes/</code>, then activate under <strong>Appearance → Themes</strong>. Slug in <code>theme.json</code> must match the folder name.</p>"
+    },
+    {
+        "title": "Theme inheritance and assets",
+        "slug": "theme-inheritance-and-assets",
+        "section": "theme-developers",
+        "summary": "Parents, theme_asset(), and the storefront boundary.",
+        "body": "<h2>Inheritance</h2>\n<p>List parent slugs in <code>theme.json</code>. Twig resolves templates child-first, then parents, then core.</p>\n<h2>Assets</h2>\n<pre><code>&lt;link rel=\"stylesheet\" href=\"{{ theme_asset('css/app.css') }}\" /&gt;</code></pre>\n<h2>Storefront boundary</h2>\n<p>Never link core marketing <code>/css/styles.css</code> from theme templates. Storefront pages must be portable across theme swaps.</p>"
+    },
+    {
+        "title": "Content type templates",
+        "slug": "content-type-templates",
+        "section": "theme-developers",
+        "summary": "Overriding index and show templates.",
+        "body": "<h2>Resolution order</h2>\n<ul>\n<li><code>content/{typeSlug}/show.twig</code></li>\n<li><code>content/show.twig</code> (fallback)</li>\n</ul>\n<p>Same pattern for <code>index.twig</code> and taxonomy archives.</p>\n<h2>Variables</h2>\n<p>Templates receive the entry, field map, taxonomies, and SEO meta. Use <code>theme_settings</code> for theme options.</p>"
+    },
+    {
+        "title": "E-commerce setup overview",
+        "slug": "ecommerce-setup-overview",
+        "section": "commerce",
+        "summary": "End-to-end commerce checklist.",
+        "body": "<h2>Prerequisites</h2>\n<ul>\n<li>Run <code>composer migrate</code></li>\n<li>Import the <strong>Product store</strong> blueprint or create a product content type manually</li>\n<li>Stripe account with API keys</li>\n</ul>\n<h2>Admin steps</h2>\n<ol>\n<li><strong>Commerce → Settings</strong> — enable commerce, set product type slug, currency</li>\n<li>Add Stripe secret, publishable, and webhook signing keys</li>\n<li>Configure tax, shipping, and emails as needed</li>\n<li>Create products as published entries with price fields</li>\n<li>Add webhook endpoint <code>/commerce/stripe/webhook</code> in Stripe</li>\n</ol>"
+    },
+    {
+        "title": "Stripe and commerce settings",
+        "slug": "stripe-and-commerce-settings",
+        "section": "commerce",
+        "summary": "Keys, webhooks, and configuration.",
+        "body": "<h2>Stripe keys</h2>\n<p>Use test keys in staging. Store live keys only in production <code>.env</code> or encrypted settings—never in git.</p>\n<h2>Webhooks</h2>\n<p>Subscribe to <code>checkout.session.completed</code> and <code>checkout.session.expired</code>. Webhooks fulfill inventory, digital grants, and emails if the customer never returns to the success URL.</p>\n<h2>Coupons &amp; shipping</h2>\n<p>Manage under <strong>Commerce → Coupons</strong> and shipping zones when flat-rate or zone shipping is enabled.</p>"
+    },
+    {
+        "title": "Products, cart, and checkout",
+        "slug": "products-cart-and-checkout",
+        "section": "commerce",
+        "summary": "Storefront purchase flow.",
+        "body": "<h2>Product fields</h2>\n<p>Convention includes <code>price_cents</code>, <code>purchasable</code>, optional <code>stripe_price_id</code>, <code>sku</code>, <code>stock_qty</code>.</p>\n<h2>Storefront</h2>\n<ul>\n<li><code>/shop</code> — product grid</li>\n<li><code>/commerce/cart</code> — cart management</li>\n<li>POST checkout routes require CSRF tokens</li>\n</ul>\n<h2>Buy now vs cart</h2>\n<p>Single-item Stripe Checkout vs multi-item cart checkout. Coupons apply to cart lines using local <code>price_cents</code> pricing.</p>"
+    },
+    {
+        "title": "Digital downloads and orders",
+        "slug": "digital-downloads-and-orders",
+        "section": "commerce",
+        "summary": "Fulfillment after payment.",
+        "body": "<h2>Digital products</h2>\n<p>Set <code>digital_file</code> (media ID), <code>digital_url</code>, or <code>digital_entry_slug</code>. Priority: file → URL → entry.</p>\n<h2>Customer access</h2>\n<ul>\n<li>Tokenized link <code>/commerce/access/{token}</code></li>\n<li>Account order history when logged in</li>\n<li>Email links in confirmation messages</li>\n</ul>\n<h2>Admin</h2>\n<p>Refund orders from order detail; grants revoke automatically. Export orders to CSV for accounting.</p>"
+    }
+]
