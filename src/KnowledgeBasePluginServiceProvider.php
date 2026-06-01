@@ -11,9 +11,8 @@ final class KnowledgeBasePluginServiceProvider implements PluginServiceProviderI
 {
     public function boot(PluginBootContext $context): void
     {
-        if (KnowledgeBaseSettings::isPublicVisible($context->pdo())) {
-            $context->registerPluginReservedSlugs([KnowledgeBaseSettings::CONTENT_TYPE_SLUG]);
-        }
+        // Public URLs use the core content-type routes /kb/{slug} (has_public_route on the kb type).
+        // Do not registerPluginReservedSlugs(['kb']) — that blocks public_content.php from serving entries.
 
         $context->registerAdminNavItem('Knowledge Base', 'plugin.knowledge_base_plugin.index');
         $context->registerAdminNavItem('Knowledge Base settings', 'plugin.knowledge_base_plugin.settings');
