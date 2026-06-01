@@ -23,7 +23,7 @@ return function (App $app, PluginBootContext $ctx): void {
         $cmsUser = $request->getAttribute('cms_user') ?? [];
 
         return array_merge($ctx->viewData(), [
-            'admin_nav' => 'extensions_plugins',
+            'admin_nav' => 'plugin_knowledge_base',
             'cms_user' => is_array($cmsUser) ? $cmsUser : [],
         ], $extra);
     };
