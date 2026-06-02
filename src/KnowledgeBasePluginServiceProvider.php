@@ -6,6 +6,7 @@ namespace KnowledgeBasePlugin;
 
 use App\Plugin\PluginBootContext;
 use App\Plugin\PluginServiceProviderInterface;
+use Twig\Environment;
 
 final class KnowledgeBasePluginServiceProvider implements PluginServiceProviderInterface
 {
@@ -15,5 +16,13 @@ final class KnowledgeBasePluginServiceProvider implements PluginServiceProviderI
         // Do not registerPluginReservedSlugs(['kb']) — that blocks public_content.php from serving entries.
 
         $context->registerAdminNavItem('Knowledge Base', 'plugin.knowledge_base_plugin.index');
+
+        $env = $context->twig()->getEnvironment();
+        if ($env instanceof Environment) {
+            $ext = new KnowledgeBaseTwigExtension($context->pdo());
+            if (!$env->hasExtension(KnowledgeBaseTwigExtension::class)) {
+                $env->addExtension($ext);
+            }
+        }
     }
 }

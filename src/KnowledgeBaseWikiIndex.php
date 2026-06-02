@@ -161,6 +161,110 @@ final class KnowledgeBaseWikiIndex
     }
 
     /**
+     * Published articles grouped by kb-section for the public storefront sidebar.
+     *
+     * @return list<array{
+     *   section_slug: string,
+     *   section_label: string,
+     *   articles: list<array{entry_id: int, title: string, slug: string, summary: string, public_url: string, is_active: bool}>
+     * }>
+     */
+    public function groupedForPublic(?string $currentSlug = null): array
+    {
+        if (!KnowledgeBaseSettings::isPublicVisible($this->pdo)) {
+            return [];
+        }
+
+        $ctx = $this->kbTypeContext();
+        if ($ctx === null) {
+            return [];
+        }
+
+        $typeId = $ctx['type_id'];
+        $summaryFieldId = $ctx['summary_field_id'];
+        $termSlugById = $ctx['term_slug_by_id'];
+        $currentSlug = $currentSlug !== null ? trim($currentSlug) : '';
+
+        $entries = new ContentEntryRepository($this->pdo);
+        $values = new ContentEntryValueRepository($this->pdo);
+        $entryTax = new ContentEntryTaxonomyRepository($this->pdo);
+
+        $rows = [];
+        $page = 1;
+        do {
+            $batch = $entries->publishedForContentTypePaged($typeId, $page, 100);
+            if ($batch === []) {
+                break;
+            }
+            $rows = array_merge($rows, $batch);
+            $page++;
+        } while (count($batch) === 100 && count($rows) < 500);
+
+        $bySection = [];
+        foreach (self::SECTION_LABELS as $slug => $label) {
+            $bySection[$slug] = [
+                'section_slug' => $slug,
+                'section_label' => $label,
+                'articles' => [],
+            ];
+        }
+
+        $entryIds = array_map(static fn (array $r): int => (int) $r['id'], $rows);
+        $summaries = $summaryFieldId !== null
+            ? $values->valuesForFieldAndEntryIds($summaryFieldId, $entryIds)
+            : [];
+
+        $base = '/' . KnowledgeBaseSettings::CONTENT_TYPE_SLUG;
+        foreach ($rows as $row) {
+            $entryId = (int) $row['id'];
+            $slug = (string) $row['slug'];
+            $title = (string) $row['title'];
+            $sectionSlug = 'getting-started';
+            foreach ($entryTax->termIdsForEntry($entryId) as $tid) {
+                if (isset($termSlugById[$tid])) {
+                    $sectionSlug = $termSlugById[$tid];
+                    break;
+                }
+            }
+            if (!isset($bySection[$sectionSlug])) {
+                $bySection[$sectionSlug] = [
+                    'section_slug' => $sectionSlug,
+                    'section_label' => ucfirst(str_replace('-', ' ', $sectionSlug)),
+                    'articles' => [],
+                ];
+            }
+
+            $bySection[$sectionSlug]['articles'][] = [
+                'entry_id' => $entryId,
+                'title' => $title,
+                'slug' => $slug,
+                'summary' => $summaries[$entryId] ?? '',
+                'public_url' => $base . '/' . rawurlencode($slug),
+                'is_active' => $currentSlug !== '' && $slug === $currentSlug,
+            ];
+        }
+
+        foreach ($bySection as &$section) {
+            usort($section['articles'], static fn (array $a, array $b): int => strcmp($a['title'], $b['title']));
+        }
+        unset($section);
+
+        $ordered = [];
+        foreach (array_keys(self::SECTION_LABELS) as $slug) {
+            if (isset($bySection[$slug]) && $bySection[$slug]['articles'] !== []) {
+                $ordered[] = $bySection[$slug];
+            }
+        }
+        foreach ($bySection as $slug => $section) {
+            if (!isset(self::SECTION_LABELS[$slug]) && $section['articles'] !== []) {
+                $ordered[] = $section;
+            }
+        }
+
+        return $ordered;
+    }
+
+    /**
      * @return array{
      *   entry_id: int,
      *   title: string,
