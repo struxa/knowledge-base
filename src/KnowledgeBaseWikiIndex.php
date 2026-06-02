@@ -171,7 +171,7 @@ final class KnowledgeBaseWikiIndex
      */
     public function groupedForPublic(?string $currentSlug = null): array
     {
-        if (!KnowledgeBaseSettings::isPublicVisible($this->pdo)) {
+        if (!KnowledgeBaseSettings::isStorefrontWikiActive($this->pdo)) {
             return [];
         }
 

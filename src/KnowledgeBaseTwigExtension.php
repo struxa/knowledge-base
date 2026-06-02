@@ -27,7 +27,7 @@ final class KnowledgeBaseTwigExtension extends AbstractExtension
 
     public function publicEnabled(): bool
     {
-        return KnowledgeBaseSettings::isPublicVisible($this->pdo);
+        return KnowledgeBaseSettings::isStorefrontWikiActive($this->pdo);
     }
 
     /**

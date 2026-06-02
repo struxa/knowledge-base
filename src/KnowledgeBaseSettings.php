@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KnowledgeBasePlugin;
 
+use App\Content\ContentTypeRepository;
 use App\Settings;
 use App\Settings\SettingsRepository;
 use PDO;
@@ -32,6 +33,26 @@ final class KnowledgeBaseSettings
         }
 
         return $raw === '1';
+    }
+
+    /**
+     * Whether the public /kb wiki layout and navigation should render.
+     * True when the plugin setting is on, or when the kb content type still has a public route
+     * (e.g. route enabled in Content types before the setting was synced).
+     */
+    public static function isStorefrontWikiActive(?PDO $pdo = null): bool
+    {
+        if (self::isPublicVisible($pdo)) {
+            return true;
+        }
+        if ($pdo === null) {
+            return false;
+        }
+
+        $types = new ContentTypeRepository($pdo);
+        $type = $types->findBySlug(self::CONTENT_TYPE_SLUG);
+
+        return $type !== null && $type->hasPublicRoute;
     }
 
     public static function isWikiSeeded(?PDO $pdo = null): bool
