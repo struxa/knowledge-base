@@ -18,7 +18,7 @@ final class KnowledgeBaseSettings
     public const KEY_WIKI_CONTENT_VERSION = 'plugin.knowledge_base_plugin.wiki_content_version';
 
     /** Bump when bundled wiki article HTML changes; triggers sync on next admin KB visit. */
-    public const WIKI_CONTENT_VERSION = 2;
+    public const WIKI_CONTENT_VERSION = 3;
 
     public const CONTENT_TYPE_SLUG = 'kb';
 
